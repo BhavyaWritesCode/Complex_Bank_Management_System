@@ -103,24 +103,16 @@ public class Main {
             switch (option) {
                 case 1:
                     System.out.print("Enter amount to deposit: ₹");
-                    double deposit = scanner.nextDouble();
+                    double depositAmount = scanner.nextDouble();
                     scanner.nextLine();
-                    currentUser.setBalance(currentUser.getBalance() + deposit);
-                    FileManager.logTransaction(currentUser, "Deposited ₹" + deposit + " | New Balance: ₹" + currentUser.getBalance());
-                    System.out.println("✅ Deposited successfully.");
+                    Bank.deposit(currentUser, depositAmount);
                     break;
 
                 case 2:
                     System.out.print("Enter amount to withdraw: ₹");
-                    double withdraw = scanner.nextDouble();
+                    double withdrawAmount = scanner.nextDouble();
                     scanner.nextLine();
-                    if (withdraw <= currentUser.getBalance()) {
-                        currentUser.setBalance(currentUser.getBalance() - withdraw);
-                        FileManager.logTransaction(currentUser, "Withdrew ₹" + withdraw + " | New Balance: ₹" + currentUser.getBalance());
-                        System.out.println("✅ Withdrawal successful.");
-                    } else {
-                        System.out.println("❌ Insufficient balance.");
-                    }
+                    Bank.withdraw(currentUser, withdrawAmount);
                     break;
 
                 case 3:
