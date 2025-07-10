@@ -12,7 +12,7 @@ public abstract class Loan {
     protected LocalDate startDate;
 
     public Loan(double amount, double interestRate, int durationMonths) {
-        this.loanId = UUID.randomUUID().toString();  // unique ID
+        this.loanId = UUID.randomUUID().toString();  // genrerating a unique loan id
         this.amount = amount;
         this.interestRate = interestRate;
         this.durationMonths = durationMonths;
@@ -20,7 +20,7 @@ public abstract class Loan {
         this.monthlyEMI = calculateEMI();
     }
 
-    // Abstract method to override in sub-classes
+    
     public abstract String getLoanType();
 
     // EMI calculation formula
@@ -31,7 +31,7 @@ public abstract class Loan {
         return Math.round(emi * 100.0) / 100.0;
     }
 
-    // Getters
+    
     public String getLoanId() { return loanId; }
     public double getAmount() { return amount; }
     public double getInterestRate() { return interestRate; }
@@ -39,7 +39,7 @@ public abstract class Loan {
     public double getMonthlyEMI() { return monthlyEMI; }
     public LocalDate getStartDate() { return startDate; }
 
-    // File export format
+
     public String toFileString(String username) {
         return username + "|" + getLoanType() + "|" + loanId + "|" + amount + "|" + interestRate + "|" + durationMonths + "|" + monthlyEMI + "|" + startDate;
     }
