@@ -17,7 +17,10 @@ public class Bank {
 
     public static User login(String username, String password) {
         if (!userMap.containsKey(username)) {
-            userMap.putAll(FileManager.loadAllUsers()); // File se load
+            // Convert List<User> to Map<String, User> before putAll
+            for (User u : FileManager.loadAllUsers()) {
+                userMap.put(u.getUsername(), u);
+            }
         }
 
         User user = userMap.get(username);
