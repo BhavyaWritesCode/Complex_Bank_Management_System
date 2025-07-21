@@ -7,7 +7,44 @@ import models.User;
 
 public class FileManager {
 
-    // Users ko file se read karega
+    private static final String USER_FILE = "data/users.txt";
+
+
+    public static List<User> loadAllUsers() {
+        return readUsers(USER_FILE);
+    }
+
+    public static void updateAllUsers(List<User> users) {
+        writeUsers(users, USER_FILE);
+    }
+
+    public static void saveUser(User user) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE, true))) {
+            bw.write(user.getUsername() + "|" + user.getPassword() + "|" + user.getBalance());
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        createUserLog(user.getUsername());
+    }
+
+    public static void updateUser(User updatedUser) {
+        List<User> users = loadAllUsers();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUsername().equals(updatedUser.getUsername())) {
+                users.set(i, updatedUser);
+                break;
+            }
+        }
+        updateAllUsers(users);
+    }
+
+    public static void logTransaction(String username, String message) {
+        writeLog(username, message);
+    }
+
+
     public static List<User> readUsers(String filePath) {
         List<User> users = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -27,7 +64,6 @@ public class FileManager {
         return users;
     }
 
-    // Users list ko file me likhega
     public static void writeUsers(List<User> users, String filePath) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             for (User user : users) {
@@ -39,7 +75,6 @@ public class FileManager {
         }
     }
 
-    // User ke liye nayi log file banayega agar na ho to
     public static void createUserLog(String username) {
         try {
             File logDir = new File("data/logs");
@@ -56,7 +91,6 @@ public class FileManager {
         }
     }
 
-    // Log file me naye entry likhega
     public static void writeLog(String username, String message) {
         try (BufferedWriter bw = new BufferedWriter(
                 new FileWriter("data/logs/" + username + "_log.txt", true))) {
