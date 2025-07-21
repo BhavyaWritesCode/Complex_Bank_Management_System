@@ -11,7 +11,7 @@ public class Bank {
 
         User user = new User(username, password, 0.0);
         userMap.put(username, user);
-        FileManager.saveUser(user); // File me bhi save
+        FileManager.saveUser(user); 
         return true;
     }
 
