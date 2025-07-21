@@ -33,9 +33,9 @@ public class Main {
 
         boolean success = Bank.register(uname, pass);
         if (success) {
-            System.out.println("✅ Registered successfully!");
+            System.out.println("Registered successfully!");
         } else {
-            System.out.println("❌ Username already exists!");
+            System.out.println("Username already exists!");
         }
     }
 
@@ -47,10 +47,10 @@ public class Main {
 
         currentUser = Bank.login(uname, pass);
         if (currentUser != null) {
-            System.out.println("✅ Login successful. Welcome " + currentUser.getUsername());
+            System.out.println("Login successful. Welcome " + currentUser.getUsername());
             userMenu();
         } else {
-            System.out.println("❌ Invalid credentials.");
+            System.out.println("Invalid credentials.");
         }
     }
 
@@ -62,23 +62,23 @@ public class Main {
             int ch = sc.nextInt();
 
             if (ch == 1) {
-                System.out.println("💰 Current Balance: ₹" + Bank.getBalance(currentUser));
+                System.out.println("Current Balance: ₹" + Bank.getBalance(currentUser));
             } else if (ch == 2) {
                 System.out.print("Enter amount to deposit: ");
                 double amt = sc.nextDouble();
                 Bank.deposit(currentUser, amt);
-                System.out.println("✅ Deposited ₹" + amt);
+                System.out.println("Deposited ₹" + amt);
             } else if (ch == 3) {
                 System.out.print("Enter amount to withdraw: ");
                 double amt = sc.nextDouble();
                 boolean success = Bank.withdraw(currentUser, amt);
                 if (success) {
-                    System.out.println("✅ Withdrawn ₹" + amt);
+                    System.out.println("Withdrawn ₹" + amt);
                 } else {
-                    System.out.println("❌ Insufficient balance.");
+                    System.out.println("Insufficient balance.");
                 }
             } else {
-                System.out.println("👋 Logged out.");
+                System.out.println("Logged out.");
                 break;
             }
         }
