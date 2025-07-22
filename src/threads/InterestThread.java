@@ -15,7 +15,7 @@ public class InterestThread extends Thread {
         while (true) {
             try {
                 applyMonthlyInterest();
-                TimeUnit.DAYS.sleep(30); // Wait for a month
+                TimeUnit.DAYS.sleep(30); 
             } catch (InterruptedException e) {
                 break;
             }
