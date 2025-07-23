@@ -4,15 +4,20 @@ public class User {
     private String username;
     private String password;
     private double balance;
-
-    // Future use: card or loan IDs if needed
-    // private List<Loan> loans;
-    // private List<Card> cards;
+    private String accountType;
 
     public User(String username, String password, double balance) {
         this.username = username;
         this.password = password;
         this.balance = balance;
+        this.accountType = "savings"; 
+    }
+
+    public User(String username, String password, double balance, String accountType) {
+        this.username = username;
+        this.password = password;
+        this.balance = balance;
+        this.accountType = accountType;
     }
 
     // Getters
@@ -28,7 +33,11 @@ public class User {
         return balance;
     }
 
-    // Setters
+    public String getAccountType() {
+        return accountType;
+    }
+
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -37,18 +46,22 @@ public class User {
         this.balance = balance;
     }
 
-    // For file saving as a string (users.txt)
-    public String toFileString() {
-        return username + "|" + password + "|" + balance;
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
     }
 
-    // From file (users.txt) to object
+    // For file saving
+    public String toFileString() {
+        return username + "|" + password + "|" + balance + "|" + accountType;
+    }
+
     public static User fromFileString(String line) {
         String[] parts = line.split("\\|");
         String username = parts[0];
         String password = parts[1];
         double balance = Double.parseDouble(parts[2]);
-        return new User(username, password, balance);
+        String accountType = parts.length > 3 ? parts[3] : "savings"; 
+        return new User(username, password, balance, accountType);
     }
 
     @Override
@@ -56,6 +69,7 @@ public class User {
         return "User{" +
                 "username='" + username + '\'' +
                 ", balance=₹" + balance +
+                ", accountType='" + accountType + '\'' +
                 '}';
     }
 }
