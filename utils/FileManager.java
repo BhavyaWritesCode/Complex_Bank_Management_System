@@ -9,7 +9,6 @@ public class FileManager {
 
     private static final String USER_FILE = "data/users.txt";
 
-
     public static List<User> loadAllUsers() {
         return readUsers(USER_FILE);
     }
@@ -20,7 +19,7 @@ public class FileManager {
 
     public static void saveUser(User user) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE, true))) {
-            bw.write(user.getUsername() + "|" + user.getPassword() + "|" + user.getBalance());
+            bw.write(user.toFileString());  
             bw.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,19 +43,12 @@ public class FileManager {
         writeLog(username, message);
     }
 
-
     public static List<User> readUsers(String filePath) {
         List<User> users = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length >= 3) {
-                    String username = parts[0];
-                    String password = parts[1];
-                    double balance = Double.parseDouble(parts[2]);
-                    users.add(new User(username, password, balance));
-                }
+                users.add(User.fromFileString(line)); 
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,7 +59,7 @@ public class FileManager {
     public static void writeUsers(List<User> users, String filePath) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             for (User user : users) {
-                bw.write(user.getUsername() + "|" + user.getPassword() + "|" + user.getBalance());
+                bw.write(user.toFileString());  
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -95,6 +87,15 @@ public class FileManager {
         try (BufferedWriter bw = new BufferedWriter(
                 new FileWriter("data/logs/" + username + "_log.txt", true))) {
             bw.write(new Date() + " - " + message);
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void appendToFile(String filePath, String data) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
+            bw.write(data);
             bw.newLine();
         } catch (IOException e) {
             e.printStackTrace();
