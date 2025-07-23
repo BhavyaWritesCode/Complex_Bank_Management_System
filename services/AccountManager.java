@@ -13,7 +13,7 @@ public class AccountManager {
         List<User> users = FileManager.readUsers(USER_DATA_FILE);
         for (User u : users) {
             if (u.getUsername().equals(username)) {
-                return false; // Already exists
+                return false; 
             }
         }
         User newUser = new User(username, password, initialDeposit);
