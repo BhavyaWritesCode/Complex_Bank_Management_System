@@ -15,7 +15,7 @@ public class InterestThread extends Thread {
         while (true) {
             try {
                 applyMonthlyInterest();
-                TimeUnit.DAYS.sleep(30); 
+                TimeUnit.DAYS.sleep(30); // simulate monthly update
             } catch (InterruptedException e) {
                 break;
             }
@@ -39,13 +39,13 @@ public class InterestThread extends Thread {
                 double balance = Double.parseDouble(parts[2]);
                 String accountType = parts[3];
 
-                double interestRate = InterestRates.getSavingsInterestRate(accountType);
+                double interestRate = getCorrectInterestRate(accountType);
                 double interestAmount = (balance * interestRate) / 100;
-
                 double newBalance = balance + interestAmount;
 
                 updatedUsers.add(username + "|" + password + "|" + newBalance + "|" + accountType);
-                interestLogs.add(username + " received ₹" + String.format("%.2f", interestAmount) + " interest at " + new Date());
+                interestLogs.add(username + " received ₹" + String.format("%.2f", interestAmount)
+                        + " interest (" + interestRate + "%) on " + new Date());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,6 +68,24 @@ public class InterestThread extends Thread {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    // helper method to choose the correct rate
+    private double getCorrectInterestRate(String accountType) {
+        switch (accountType) {
+            case "HomeLoan":
+            case "EduLoan":
+            case "PersonalLoan":
+            case "CarLoan":
+            case "GoldLoan":
+                return InterestRates.getLoanInterestRate(accountType);
+            case "Savings":
+            case "FixedDeposit":
+            case "RecurringDeposit":
+                return InterestRates.getSavingsInterestRate(accountType);
+            default:
+                return 0.0;
         }
     }
 }
