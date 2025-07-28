@@ -1,103 +1,93 @@
 package services;
 
-import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CardManager {
 
-    private static final File cardFile = new File("data/cards.txt");
+    private static class Card {
+        String type;
+        String number;
+        String pin;
+        double balance;
 
-
-    public static void issueCard(String username, String cardType, String cardNumber, String pin, double balance) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(cardFile, true))) {
-            writer.write(username + "|" + cardType + "|" + cardNumber + "|" + pin + "|" + balance);
-            writer.newLine();
-            System.out.println( cardType + " card issued to " + username);
-        } catch (IOException e) {
-            System.out.println("Error issuing card: " + e.getMessage());
+        Card(String type, String number, String pin, double balance) {
+            this.type = type;
+            this.number = number;
+            this.pin = pin;
+            this.balance = balance;
         }
     }
 
-    public static void updatePin(String username, String cardNumber, String newPin) {
-        List<String> updatedLines = new ArrayList<>();
+    private static final Map<String, Card> cardMap = new HashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(cardFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length == 5 && parts[0].equals(username) && parts[2].equals(cardNumber)) {
-                    parts[3] = newPin;
-                    line = String.join("|", parts);
-                }
-                updatedLines.add(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading card file: " + e.getMessage());
-            return;
+    public static boolean issueCard(String username, String type, String number, String pin, double balance) {
+        if (cardMap.containsKey(username)) {
+            System.out.println("User already has a card.");
+            return false;
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(cardFile))) {
-            for (String updated : updatedLines) {
-                writer.write(updated);
-                writer.newLine();
-            }
-            System.out.println(" PIN updated successfully.");
-        } catch (IOException e) {
-            System.out.println(" Error updating card file: " + e.getMessage());
-        }
+        Card newCard = new Card(type, number, pin, balance);
+        cardMap.put(username, newCard);
+        return true;
     }
 
-    public static void viewCardDetails(String username) {
-        boolean found = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(cardFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length == 5 && parts[0].equals(username)) {
-                    System.out.println(" Card Type: " + parts[1]);
-                    System.out.println(" Card Number: " + parts[2]);
-                    System.out.println(" PIN: " + parts[3]);
-                    System.out.println(" Linked Balance: ₹" + parts[4]);
-                    System.out.println("-------------------------");
-                    found = true;
-                }
-            }
-            if (!found) {
-                System.out.println(" No card found for user: " + username);
-            }
-        } catch (IOException e) {
-            System.out.println(" Error reading card details: " + e.getMessage());
+    public static double getCardBalance(String username, String pin) {
+        if (!cardMap.containsKey(username)) {
+            System.out.println("No card found for user.");
+            return -1;
         }
+
+        Card card = cardMap.get(username);
+        if (!card.pin.equals(pin)) {
+            System.out.println("Incorrect PIN.");
+            return -1;
+        }
+
+        return card.balance;
     }
 
-    public static double getCardBalance(String username, String cardNumber) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(cardFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length == 5 && parts[0].equals(username) && parts[2].equals(cardNumber)) {
-                    return Double.parseDouble(parts[4]);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(" Error reading card file: " + e.getMessage());
-        }
-        return 0.0;
+    public static boolean validateCard(String username, String pin) {
+        if (!cardMap.containsKey(username)) return false;
+
+        Card card = cardMap.get(username);
+        return card.pin.equals(pin);
     }
 
-    public static boolean isCardExists(String cardNumber) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(cardFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length >= 3 && parts[2].equals(cardNumber)) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(" Error checking card: " + e.getMessage());
+    public static boolean withdraw(String username, String pin, double amount) {
+        if (!validateCard(username, pin)) return false;
+
+        Card card = cardMap.get(username);
+        if (card.balance < amount) return false;
+
+        card.balance -= amount;
+        return true;
+    }
+
+    public static boolean deposit(String username, String pin, double amount) {
+        if (!validateCard(username, pin)) return false;
+
+        Card card = cardMap.get(username);
+        card.balance += amount;
+        return true;
+    }
+
+    public static String viewCardDetails(String username) {
+        if (!cardMap.containsKey(username)) {
+            return "No card found for user.";
         }
-        return false;
+
+        Card card = cardMap.get(username);
+        return "Type: " + card.type + ", Number: " + card.number + ", Balance: ₹" + card.balance;
+    }
+
+    public static boolean updatePin(String username, String oldPin, String newPin) {
+        if (!validateCard(username, oldPin)) {
+            return false;
+        }
+
+        Card card = cardMap.get(username);
+        card.pin = newPin;
+        return true;
     }
 }
